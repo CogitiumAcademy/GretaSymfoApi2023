@@ -13,8 +13,9 @@ namespace App\Entity;
 
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Validator\Constraints as Assert;
+use ApiPlatform\Metadata\ApiResource;
 use function Symfony\Component\String\u;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Defines the properties of the Comment entity to represent the blog comments.
@@ -28,6 +29,7 @@ use function Symfony\Component\String\u;
  */
 #[ORM\Entity]
 #[ORM\Table(name: 'symfony_demo_comment')]
+#[ApiResource]
 class Comment
 {
     #[ORM\Id]
