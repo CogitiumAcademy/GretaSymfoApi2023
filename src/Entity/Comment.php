@@ -11,9 +11,14 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\Put;
 use Doctrine\DBAL\Types\Types;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Delete;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\GetCollection;
 use function Symfony\Component\String\u;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -29,7 +34,21 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 #[ORM\Entity]
 #[ORM\Table(name: 'symfony_demo_comment')]
+/*
 #[ApiResource]
+#[Get]
+#[Put(security: "is_granted('ROLE_ADMIN') or object.author == user")]
+#[Patch(security: "is_granted('ROLE_ADMIN') or object.author == user")]
+#[GetCollection]
+#[Post(security: "is_granted('ROLE_USER')")]
+*/
+#[ApiResource]
+#[Get]
+#[GetCollection]
+#[\ApiPlatform\Metadata\Post(securityPostDenormalize: "is_granted('comment_new', object)")]
+#[Put(security: "is_granted('comment_edit', object)")]
+#[Patch(security: "is_granted('comment_edit', object)")]
+#[Delete(security: "is_granted('comment_delete', object)")]
 class Comment
 {
     #[ORM\Id]
@@ -51,7 +70,7 @@ class Comment
 
     #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(nullable: false)]
-    private ?User $author = null;
+    public ?User $author = null;
 
     public function __construct()
     {

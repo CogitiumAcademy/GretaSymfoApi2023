@@ -29,3 +29,6 @@ myapi:
     type: attribute
     prefix: /
     
+auth:
+    path: /auth
+    methods: ['POST']
