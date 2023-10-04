@@ -17,13 +17,13 @@ class MyapiController extends AbstractController
     public function index(PostRepository $pr): JsonResponse
     {
         $posts = $pr->findAll();
-        return $this->json($posts, Response::HTTP_OK);
+        return $this->json($posts, Response::HTTP_OK, [], ["groups" => "read:post:collection"]);
     }
 
     #[Route('/posts/{id}', name: 'post', methods: ['GET'])]
     public function show(Post $post): JsonResponse
     {
-        return $this->json($post->getAuthor(), Response::HTTP_OK);
+        return $this->json($post, Response::HTTP_OK, [], ["groups" => "read:post:item"]);
     }
 
     #[Route('/users', name: 'users', methods: ['GET'])]

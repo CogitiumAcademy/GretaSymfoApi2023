@@ -86,7 +86,7 @@ security:
         - { path: '^/(%app_locales%)/admin', roles: ROLE_ADMIN }
         # - { path: '^/api/', roles: ROLE_ADMIN }
         - { path: '^/api/posts', roles: ROLE_ADMIN, methods: [POST, PUT, PATCH, DELETE] }
-        - { path: '^/api/comments', roles: ROLE_ADMIN, methods: [DELETE] }
+        # - { path: '^/api/comments', roles: ROLE_ADMIN, methods: [DELETE] }
         - { path: '^/api/comments', roles: ROLE_USER, methods: [POST] }
         # - { path: '^/api/users', roles: ROLE_ADMIN, methods: [GET, POST, PUT, PATCH, DELETE] }
         - { path: '^/api', roles: PUBLIC_ACCESS } # facultatif

@@ -1,0 +1,49 @@
+<?php
+
+// Doctrine Lifecycle Listeners
+
+// src/EventListener/UserHash.php
+namespace App\EventListener;
+
+use App\Entity\User;
+use Doctrine\ORM\Events;
+use Doctrine\ORM\Event\PrePersistEventArgs;
+use Doctrine\Bundle\DoctrineBundle\Attribute\AsDoctrineListener;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+
+#[AsDoctrineListener(event: Events::prePersist, priority: 500, connection: 'default')]
+class UserHash1
+{
+    private UserPasswordHasherInterface $passwordHasher;
+
+    public function __construct(UserPasswordHasherInterface $passwordHasher)
+    {
+        $this->passwordHasher = $passwordHasher;
+    }
+    
+    // the listener methods receive an argument which gives you access to
+    // both the entity object of the event and the entity manager itself
+    public function prePersist(PrePersistEventArgs $args): void
+    {
+        $entity = $args->getObject();
+
+        // if this listener only applies to certain entity types,
+        // add some code to check the entity type as early as possible
+        // Si l'intance concernée est de type User
+        if ($entity instanceof User) {
+            //return;
+            // On procède au hashage du password envoyé en clair
+            $entity->setPassword(
+                $this->passwordHasher->hashPassword(
+                    $entity,
+                    $entity->getPassword()
+                )
+            );
+        }
+        //dd($entity);
+
+        //$entityManager = $args->getObjectManager();
+        // ... do something with the Product entity
+
+    }
+}

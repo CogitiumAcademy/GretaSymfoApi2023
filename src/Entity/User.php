@@ -20,6 +20,7 @@ use Doctrine\ORM\Mapping as ORM;
 use App\Repository\UserRepository;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\GetCollection;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -36,13 +37,14 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
  */
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: 'symfony_demo_user')]
-//#[ApiResource]
-#[ApiResource(security: "is_granted('ROLE_USER')")]
+#[ApiResource]
+//#[ApiResource(security: "is_granted('ROLE_USER')")]
 #[Get]
 #[Patch(security: "is_granted('ROLE_ADMIN') or object == user")]
 #[Put(security: "is_granted('ROLE_ADMIN') or object == user")]
 #[GetCollection]
-#[Post(security: "is_granted('ROLE_ADMIN')")]
+//#[Post(security: "is_granted('ROLE_ADMIN')")]
+#[Post]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     // We can use constants for roles to find usages all over the application rather
@@ -58,6 +60,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(type: Types::STRING)]
     #[Assert\NotBlank]
+    #[Groups(['read:post:item'])]
     private ?string $fullName = null;
 
     #[ORM\Column(type: Types::STRING, unique: true)]
