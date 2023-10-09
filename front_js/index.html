@@ -130,9 +130,13 @@
 
                             tags.map(function(tag) {
                                 let h5tag = createNode('h5');
-                                h5tag.innerHTML = `${tag.name}`;
+                                h5tag.innerHTML = `<i class="fa-solid fa-tag"></i> ${tag.name}`;
                                 append(root, h5tag);
                             })
+
+                            let hr = createNode('hr');
+                            append(root, hr);
+
                         })
 
                     })
