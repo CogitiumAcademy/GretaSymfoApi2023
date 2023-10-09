@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta name="description" content="">
+        <meta name="author" content="">
+
+        <title>Titre</title>
+
+        <!-- Bootstrap core CSS -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+
+        <!-- FontAwesome core CSS -->
+        <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+        
+        <link rel="stylesheet" href="">
+        <style>
+            #loader img {
+                width: 200px;
+            }
+            #loader {
+                width: 100%;
+                justify-content: center;
+                margin: auto;
+            }
+        </style>
+
+    </head>
+
+    <body>
+
+        <div class="container">
+            <h1>API Frontend</h1>
+            <nav>
+                <button id="button_posts">Posts</button>
+                <button id="button_post">Post + id</button>
+                <button id="button_tags">Tags</button>
+                <button id="button_me" style="display: none">Me</button>
+                <button id="button_login">Login</button>
+                <button id="button_logout" style="display: none">Logout</button>
+            </nav>
+            <div id="loader" style="display:none"><img src="loader.gif" alt=""></div>
+            <div id="root"></div>
+        </div>
+
+        <!-- Bootstrap core JavaScript -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>    
+
+        <script>
+            window.onload = function () {
+                console.log('Load !')
+
+                function createNode(element) {
+                    return document.createElement(element);
+                }
+
+                function append(parent, el) {
+                    return parent.appendChild(el);
+                }
+
+                const token = localStorage.getItem('token')
+                if (token) {
+                    document.getElementById("button_me").style.display = "inline"
+                    document.getElementById("button_logout").style.display = "inline"
+                    document.getElementById("button_login").style.display = "none"
+                }
+
+                const api = 'https://localhost:8000'
+
+
+                document.getElementById("button_posts").addEventListener("click", function(){
+                    console.log('Posts !')
+
+                    document.getElementById('root').innerHTML = ""
+                    document.getElementById("loader").style.display = "block"
+
+                    const url = api + "/api/posts"
+
+                    fetch(url)
+
+                    .then(response => {
+                        console.log("Response = " , response)
+                        return response.json()
+                    })
+
+                    .then(data => {
+                        console.log("Data = " , data)
+
+                        document.getElementById("loader").style.display = "none"
+
+                        let posts = data["hydra:member"]
+                        console.log("Posts =" , posts)
+
+                        let last = data["hydra:view"]["hydra:last"]
+                        console.log("Last =", last)
+                        let a_last = createNode('a')
+                        a_last.innerHTML = 'Dernière page'
+                        a_last.href = api + last
+                        append(root, a_last)
+
+
+                        let nb = data["hydra:totalItems"]
+                        console.log("Nb =", nb)
+                        let h2 = createNode('h2')
+                        h2.innerHTML = `Les derniers articles (Total articles = ${nb})`
+                        append(root, h2)
+
+                        return posts.map(function(post) {
+                            let h3 = createNode('h3');
+                            let dateh4 = createNode('h4');
+                            let authorh4 = createNode('h4');
+                            let div = createNode('div');
+                            let p = createNode('p');
+                            h3.innerHTML = `${post.title}`;
+                            dateh4.innerHTML = `<i class="fa-regular fa-calendar-days"></i> ${post.publishedAt}`;
+                            authorh4.innerHTML = `<i class="fa-solid fa-user"></i> ${post.author.fullName}`;
+                            div.innerHTML = `${post.slug}`;
+                            p.innerHTML = `${post.summary}`;
+                            append(root, h3);
+                            append(root, dateh4);
+                            append(root, authorh4);
+                            append(root, div);
+                            append(root, p);
+
+                            let tags = post["tags"]
+                            console.log("Tags =" , tags)
+
+                            tags.map(function(tag) {
+                                let h5tag = createNode('h5');
+                                h5tag.innerHTML = `${tag.name}`;
+                                append(root, h5tag);
+                            })
+                        })
+
+                    })
+
+                    .catch(error => {
+                        document.getElementById("loader").style.display = "none"
+                        console.log("Error : " , error)
+                        alert("Error : " + error)
+                    });
+
+                })
+
+                document.getElementById("button_login").addEventListener("click", function(){
+                    console.log('Login !')
+
+                    const url = api + "/auth"
+
+                    const username = prompt('Username')
+                    const password = prompt('Password')
+
+                    fetch(url, {
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                        },
+                        method: 'POST',
+                        body: JSON.stringify({ username: username, 'password': password })
+                    })
+
+                    .then(response => {
+                        console.log("Response = " , response)
+
+                        if(response.status==200)
+                        {
+                            document.getElementById("button_me").style.display = "inline"
+                            document.getElementById("button_logout").style.display = "inline"
+                            document.getElementById("button_login").style.display = "none"
+                        }
+                        return response.json()
+
+                    })
+
+                    .then(data => {
+                        console.log("Data = " , data)
+                        console.log("Token = " , data.token)
+                        if (data.token) {
+                            localStorage.setItem('token', data.token)
+                        }
+                    })
+
+                    .catch(error => {
+                        console.log("Error : " , error)
+                        alert("Error : " + error)
+                    });
+
+
+                })
+
+                document.getElementById("button_logout").addEventListener("click", function(){
+            
+                    localStorage.setItem('token', null)
+                    document.getElementById("button_me").style.display = "none"
+                    document.getElementById("button_login").style.display = "inline"
+                    document.getElementById("button_logout").style.display = "none"
+
+                })
+
+            }
+
+        </script>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+
+    </body>
+
+</html>

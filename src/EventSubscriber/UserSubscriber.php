@@ -84,7 +84,7 @@ class UserSubscriber implements EventSubscriberInterface
     {
         // On récupère l'objet qui doit être persisté
         $entity = $args->getObject();
-        dd($args);
+        //dd($args);
 
         // Si l'intance concernée est de type User
         if ($entity instanceof User) {

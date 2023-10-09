@@ -79,12 +79,12 @@ class Post
     private ?string $content = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    #[Groups(['read:post:item'])]
+    #[Groups(['read:post:collection', 'read:post:item'])]
     private \DateTime $publishedAt;
 
     #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['read:post:item'])]
+    #[Groups(['read:post:collection', 'read:post:item'])]
     private ?User $author = null;
 
     /**
