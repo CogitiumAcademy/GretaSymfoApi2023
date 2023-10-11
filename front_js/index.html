@@ -134,19 +134,24 @@
                         append(root, h2)
 
                         posts.map(function(post) {
-                            let h3 = createNode('h3')
+                            let h2 = createNode('h2')
+                            append(root, h2)
+
+                            let a_title = createNode('a')
+                            a_title.innerHTML = `${post.title}`
+                            a_title.classList.add("titre")
+                            a_title.dataset.id = `${post.id}`
+                            a_title.href = `#`
+                            append(h2, a_title)
+
                             let dateh4 = createNode('h4')
                             let authorh4 = createNode('h4')
                             let div = createNode('div')
                             let p = createNode('p')
-                            h3.innerHTML = `${post.title}`
-                            h3.classList.add("titre")
-                            h3.dataset.id = `${post.id}`
                             dateh4.innerHTML = `<i class="fa-regular fa-calendar-days"></i> ${post.publishedAt}`;
                             authorh4.innerHTML = `<i class="fa-solid fa-user"></i> ${post.author.fullName}`;
                             div.innerHTML = `${post.slug}`
                             p.innerHTML = `${post.summary}`
-                            append(root, h3)
                             append(root, dateh4)
                             append(root, authorh4)
                             append(root, div)
@@ -170,10 +175,16 @@
                         console.log("Titres = ", titles)
                         for(let title of titles) {
                             console.log(title)
-                            title.addEventListener("click", function () {
+                            title.addEventListener("click", function (event) {
                                 console.log("Clic")
+                                event.preventDefault();
 
-                                const url = api + "/api/posts/" + id
+                                //const url = api + "/api/posts/" + id
+                                const url = `${api}/api/posts/${this.dataset.id}`
+                                console.log("Url = ", url)
+
+                                document.getElementById('root').innerHTML = ""
+                                document.getElementById("loader").style.display = "block"
 
                                 fetch(url)
 
@@ -326,8 +337,10 @@
 
                 })
 
-                document.getElementById("button_logout").addEventListener("click", function(){
+                document.getElementById("button_logout").addEventListener("click", function(event){
             
+                    event.preventDefault();
+
                     localStorage.setItem('token', null)
                     document.getElementById("button_me").style.display = "none"
                     document.getElementById("button_login").style.display = "inline"
@@ -337,8 +350,10 @@
 
                 })
 
-                document.getElementById("button_me").addEventListener("click", function(){
+                document.getElementById("button_me").addEventListener("click", function(event){
             
+                    event.preventDefault();
+
                     document.getElementById('root').innerHTML = ""
                     document.getElementById("loader").style.display = "block"
 
@@ -404,8 +419,10 @@
 
                 })
 
-                document.getElementById("button_register").addEventListener("click", function(){
+                document.getElementById("button_register").addEventListener("click", function(event){
                     console.log('Register !')
+
+                    event.preventDefault();
 
                     const url = api + "/api/users"
 
@@ -548,8 +565,6 @@
                     });
 
                 })
-            
-                
 
             }
 
